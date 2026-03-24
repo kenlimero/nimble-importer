@@ -4,7 +4,7 @@ Hooks.once('init', () => {
   console.log('nimble-importer | Initializing Nimble Character Importer');
 });
 
-Hooks.on('renderActorDirectory', (app, html) => {
+Hooks.on('renderActorDirectory', (_app, html) => {
   if (game.system.id !== 'nimble') return;
 
   const headerActions = html[0]?.querySelector?.('.header-actions')
@@ -19,6 +19,10 @@ Hooks.on('renderActorDirectory', (app, html) => {
   headerActions.appendChild(button);
 });
 
+/**
+ * Open the file-picker dialog for importing a character JSON.
+ * @returns {Promise<void>}
+ */
 async function openImportDialog() {
   const content = await renderTemplate(
     'modules/nimble-importer/templates/import-dialog.hbs',
@@ -43,18 +47,22 @@ async function openImportDialog() {
   }).render(true);
 }
 
+/**
+ * Handle the import button click: read the file and run the importer.
+ * @param {JQuery|HTMLElement} html - Dialog content element
+ * @returns {Promise<void>}
+ */
 async function handleImport(html) {
   try {
     const input = html[0]?.querySelector?.('input[name="nimble-json"]')
       ?? html.querySelector?.('input[name="nimble-json"]');
+
     if (!input?.files?.length) {
       ui.notifications.warn(game.i18n.localize('NIMBLE_IMPORTER.ErrorNoFile'));
       return;
     }
 
-    const file = input.files[0];
-    const jsonString = await file.text();
-
+    const jsonString = await input.files[0].text();
     const { actor, warnings, error } = await importCharacter(jsonString);
 
     if (error) {
@@ -79,14 +87,26 @@ async function handleImport(html) {
   }
 }
 
-function showReport(actor, warnings) {
-  const esc = (s) => typeof foundry !== 'undefined' && foundry.utils?.escapeHTML
-    ? foundry.utils.escapeHTML(s)
-    : s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+/**
+ * Escape HTML entities to prevent XSS in dialog content.
+ * @param {string} str - Raw string
+ * @returns {string} Escaped string
+ */
+function escapeHtml(str) {
+  return typeof foundry !== 'undefined' && foundry.utils?.escapeHTML
+    ? foundry.utils.escapeHTML(str)
+    : str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 
-  const warningList = warnings.map((w) => `<li>${esc(w)}</li>`).join('');
+/**
+ * Show a post-import report dialog listing warnings and offering to open the sheet.
+ * @param {Actor} actor - The created actor
+ * @param {string[]} warnings - Warning messages to display
+ */
+function showReport(actor, warnings) {
+  const warningList = warnings.map((w) => `<li>${escapeHtml(w)}</li>`).join('');
   const content = `
-    <p><strong>${esc(actor.name)}</strong></p>
+    <p><strong>${escapeHtml(actor.name)}</strong></p>
     <h4>${game.i18n.localize('NIMBLE_IMPORTER.ReportWarnings')}</h4>
     <ul>${warningList}</ul>
   `;

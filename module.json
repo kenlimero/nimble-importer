@@ -2,7 +2,7 @@
   "id": "nimble-importer",
   "title": "Nimble Character Importer",
   "description": "Import characters exported from the Nimble RPG web app into FoundryVTT.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
