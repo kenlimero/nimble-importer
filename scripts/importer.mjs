@@ -146,15 +146,12 @@ function mapLevelUpHistory(history, classIdentifier) {
     const fvttSkill = SKILL_KEY_MAP[entry.skillPoint?.skill];
     if (fvttSkill) skillIncreases[fvttSkill] = 1;
 
-    const abilityIncreases = {};
-    const fvttAbility = STAT_KEY_MAP[entry.statBoost?.stat];
-    if (fvttAbility) abilityIncreases[fvttAbility] = 1;
-
+    // ASI data is stored on the class item's abilityScoreData, not in history entries.
     return {
       level: entry.level,
       hpIncrease: entry.hp?.value ?? 0,
       skillIncreases,
-      abilityIncreases,
+      abilityIncreases: {},
       hitDieAdded: true,
       classIdentifier,
     };
@@ -240,7 +237,11 @@ async function updateClassItem(actor, state) {
   const classItemOnActor = actor.items.find((i) => i.type === 'class');
   if (!classItemOnActor || state.level <= 1 || !state.levelUpHistory?.length) return;
 
-  const hpData = state.levelUpHistory.map((entry) => entry.hp?.value ?? 0);
+  // Preserve the level 1 HP entry set by the class _preCreate hook,
+  // then append each level-up HP roll. The system expects hpData[0] = level 1 HP.
+  const existingHpData = classItemOnActor.system.hpData ?? [];
+  const levelUpHpData = state.levelUpHistory.map((entry) => entry.hp?.value ?? 0);
+  const hpData = [...existingHpData.slice(0, 1), ...levelUpHpData];
   const asiData = buildAbilityScoreData(state.levelUpHistory);
 
   /** @type {Record<string, unknown>} */
@@ -361,11 +362,20 @@ export async function importCharacter(jsonString) {
     const maps = await loadMappings();
     const { coreItems, equipmentItems, warnings, classItem } = await resolveCompendiumItems(data, maps, state.level);
 
-    const classIdentifier = classItem?.system?.identifier ?? data.classname.toLowerCase().replace(/\s+/g, '-');
     const hitDieSize = classItem?.system?.hitDieSize ?? 8;
 
     const actor = await createBareActor(data, state);
     await addEmbeddedItems(actor, coreItems, equipmentItems);
+
+    // Read the class identifier from the EMBEDDED item (may differ from compendium)
+    const embeddedClass = actor.items.find((i) => i.type === 'class');
+    const classIdentifier = embeddedClass?.system?.identifier
+      ?? embeddedClass?.identifier
+      ?? classItem?.system?.identifier
+      ?? data.classname.toLowerCase().replace(/\s+/g, '-');
+
+    console.log(`nimble-importer | Class identifier: "${classIdentifier}" (from embedded: ${!!embeddedClass})`);
+
     await updateClassItem(actor, state);
     await updateActorLevelData(actor, state, classIdentifier, hitDieSize);
     collectPostImportWarnings(state, maps, warnings);
