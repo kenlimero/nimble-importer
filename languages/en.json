@@ -1,0 +1,26 @@
+{
+  "NIMBLE_IMPORTER": {
+    "Button": "Import Nimble Character",
+    "DialogTitle": "Import Nimble Character",
+    "DialogHint": "Select a JSON file exported from the Nimble RPG web app.",
+    "Import": "Import",
+    "Cancel": "Cancel",
+    "Success": "Successfully imported {name}",
+    "SuccessWithWarnings": "Imported {name} with {count} warning(s)",
+    "ErrorInvalidJson": "The selected file is not valid JSON.",
+    "ErrorBatchNotSupported": "Batch import not supported. Please import one character at a time.",
+    "ErrorInvalidVersion": "Unsupported export version: {version}. Expected 1.",
+    "ErrorIncomplete": "This character is not complete. Please finish building it in the web app first.",
+    "ErrorSkillPoints": "Character has unspent skill points. Please finish building it in the web app first.",
+    "ErrorMissingFields": "Missing required fields: {fields}",
+    "ErrorSystemNotActive": "The Nimble game system must be active to use this importer.",
+    "WarnItemNotFound": "Could not find \"{name}\" in {pack} compendium. Skipped.",
+    "WarnExtraSchool": "Extra spell school \"{name}\" could not be set automatically. Please configure it on the character sheet.",
+    "WarnSaveBonus": "Ancestry save bonus ({stat}) could not be set automatically. Please configure it on the character sheet.",
+    "ReportTitle": "Import Report",
+    "ReportResolved": "Resolved Items",
+    "ReportWarnings": "Warnings",
+    "ErrorNoFile": "Please select a JSON file first.",
+    "ErrorUnexpected": "An unexpected error occurred during import. Check the console for details."
+  }
+}
