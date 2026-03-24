@@ -24,27 +24,31 @@ Hooks.on('renderActorDirectory', (_app, html) => {
  * @returns {Promise<void>}
  */
 async function openImportDialog() {
-  const content = await renderTemplate(
+  const content = await foundry.applications.handlebars.renderTemplate(
     'modules/nimble-importer/templates/import-dialog.hbs',
     {},
   );
 
-  new Dialog({
-    title: game.i18n.localize('NIMBLE_IMPORTER.DialogTitle'),
+  const result = await foundry.applications.api.DialogV2.wait({
+    window: { title: game.i18n.localize('NIMBLE_IMPORTER.DialogTitle') },
     content,
-    buttons: {
-      import: {
-        icon: '<i class="fas fa-file-import"></i>',
+    buttons: [
+      {
+        action: 'import',
+        icon: 'fas fa-file-import',
         label: game.i18n.localize('NIMBLE_IMPORTER.Import'),
-        callback: (html) => handleImport(html),
+        default: true,
+        callback: (_event, button) => button.form?.parentElement ?? button.closest('.dialog'),
       },
-      cancel: {
-        icon: '<i class="fas fa-times"></i>',
+      {
+        action: 'cancel',
+        icon: 'fas fa-times',
         label: game.i18n.localize('NIMBLE_IMPORTER.Cancel'),
       },
-    },
-    default: 'import',
-  }).render(true);
+    ],
+  });
+
+  if (result) await handleImport(result);
 }
 
 /**
@@ -54,8 +58,8 @@ async function openImportDialog() {
  */
 async function handleImport(html) {
   try {
-    const input = html[0]?.querySelector?.('input[name="nimble-json"]')
-      ?? html.querySelector?.('input[name="nimble-json"]');
+    const root = html instanceof HTMLElement ? html : (html[0] ?? html);
+    const input = root.querySelector('input[name="nimble-json"]');
 
     if (!input?.files?.length) {
       ui.notifications.warn(game.i18n.localize('NIMBLE_IMPORTER.ErrorNoFile'));
@@ -111,20 +115,22 @@ function showReport(actor, warnings) {
     <ul>${warningList}</ul>
   `;
 
-  new Dialog({
-    title: game.i18n.localize('NIMBLE_IMPORTER.ReportTitle'),
+  foundry.applications.api.DialogV2.wait({
+    window: { title: game.i18n.localize('NIMBLE_IMPORTER.ReportTitle') },
     content,
-    buttons: {
-      open: {
-        icon: '<i class="fas fa-user"></i>',
+    buttons: [
+      {
+        action: 'open',
+        icon: 'fas fa-user',
         label: 'Open Sheet',
+        default: true,
         callback: () => actor.sheet.render(true),
       },
-      ok: {
-        icon: '<i class="fas fa-check"></i>',
+      {
+        action: 'ok',
+        icon: 'fas fa-check',
         label: 'OK',
       },
-    },
-    default: 'open',
-  }).render(true);
+    ],
+  });
 }
