@@ -1,6 +1,6 @@
 # Nimble Character Importer
 
-A FoundryVTT module that imports characters created with the [Nimble RPG Character Builder](https://nimblernomicon.online/) into the [Nimble RPG system](https://github.com/Nimble-Co/FoundryVTT-Nimble) as fully playable actors.
+A FoundryVTT module that imports characters created with the [Nimble RPG Character Builder](https://nimblenomicon.online/) into the [Nimble RPG system](https://github.com/Nimble-Co/FoundryVTT-Nimble) as fully playable actors.
 
 ## Requirements
 
@@ -9,7 +9,7 @@ A FoundryVTT module that imports characters created with the [Nimble RPG Charact
 
 ## How to Use
 
-1. Create your character on [nimblernomicon.online](https://nimblernomicon.online/)
+1. Create your character on [nimblernomicon.online](https://nimblenomicon.online/)
 2. Export your character as a JSON file from the character builder
 3. In FoundryVTT, enable the **Nimble Character Importer** module
 4. Open the **Actors** sidebar and click the **Import Nimble Character** button
@@ -42,7 +42,7 @@ Copy or symlink the `nimble-importer/` folder into your FoundryVTT `Data/modules
 
 # Nimble Character Importer (FR)
 
-Un module FoundryVTT qui importe les personnages construits avec le [Nimble RPG Character Builder](https://nimblernomicon.online/) dans le [systeme Nimble RPG](https://github.com/Nimble-Co/FoundryVTT-Nimble) en tant qu'acteurs jouables.
+Un module FoundryVTT qui importe les personnages construits avec le [Nimble RPG Character Builder](https://nimblenomicon.online/) dans le [systeme Nimble RPG](https://github.com/Nimble-Co/FoundryVTT-Nimble) en tant qu'acteurs jouables.
 
 ## Prerequis
 
@@ -51,7 +51,7 @@ Un module FoundryVTT qui importe les personnages construits avec le [Nimble RPG 
 
 ## Utilisation
 
-1. Creez votre personnage sur [nimblernomicon.online](https://nimblernomicon.online/)
+1. Creez votre personnage sur [nimblenomicon.online](https://nimblernomicon.online/)
 2. Exportez votre personnage en fichier JSON depuis le character builder
 3. Dans FoundryVTT, activez le module **Nimble Character Importer**
 4. Ouvrez la barre laterale **Actors** et cliquez sur le bouton **Import Nimble Character**
